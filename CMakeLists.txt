@@ -7,17 +7,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 源文件
 add_executable(StudentManage
-    Student.cpp
-    Student.h
+    src/main.cpp
+    src/Student.cpp
+    include/Student.h
 )
 
-# ---- 编译器编码设置：强制源码按 UTF-8 解释 ----
-# MSVC（Visual Studio / MSVC 编译器）
+# 让编译器能找到 include 目录下的头文件
+target_include_directories(StudentManage PRIVATE include)
+
 target_compile_options(StudentManage PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/utf-8>
 )
 
-# MinGW / Clang on Windows（如果你用的是这些，可以一起开）
-# target_compile_options(StudentManage PRIVATE
-#     $<$<CXX_COMPILER_ID:GNU,Clang>:-finput-charset=UTF-8 -fexec-charset=UTF-8>
-# )

@@ -1,5 +1,4 @@
-#ifndef STUDENT_H
-#define STUDENT_H
+#pragma once
 
 #include <string>
 
@@ -58,6 +57,9 @@ void SearchByClass(const StudentArray& arr, ClassType cls);
 // 统计功能
 float AverageScore(const StudentArray& arr);
 bool MaxMinScore(const StudentArray& arr, float& maxScore, float& minScore);
+void StatAll(const StudentArray& arr);
+void StatByClass(const StudentArray& arr, ClassType cls);
+void HandleStat(StudentArray& arr);
 
 // 文件与日志
 bool LoadFile(const char* filename, StudentArray& arr);
@@ -79,5 +81,3 @@ void HandleStat(StudentArray& arr);
 
 bool IsValidAge(int age);
 bool IsUniqueID(const StudentArray& arr, const char* id);
-
-#endif  // STUDENT_H

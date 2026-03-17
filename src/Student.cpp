@@ -1,4 +1,4 @@
-#include "student.h"
+#include "../include/Student.h"
 
 #include <cstring>  // strstr模糊查询
 #include <ctime>
@@ -10,67 +10,15 @@
 
 using nlohmann::json;
 
-int main() {
-	StudentArray students;
-	InitStudents(students);
-
-	LoadFile("students.json", students);  // 启动时读文件
-
-	int choice = -1;
-	while (true) {
-		MainMenu();
-		std::cout << "Please enter your choice: ";
-		if (!(std::cin >> choice)) {
-			std::cin.clear();
-			std::cin.ignore(1024, '\n');
-			std::cout << "Invalid input, please try again.\n";
-			continue;
-		}
-
-		switch (choice) {
-			case 1:
-				HandleAdd(students);
-				break;
-			case 2:
-				HandleRemove(students);
-				break;
-			case 3:
-				HandleModify(students);
-				break;
-			case 4:
-				HandleSearch(students);
-				break;
-			case 5:
-				HandleSort(students);
-				break;
-			case 6:
-				HandleStat(students);
-				break;
-			case 7:
-				ListAllStudents(students);
-				break;
-			case 0:
-				SortStudents(students, CompareIDAsend);  // 退出的时候按id重新排序一遍再退出
-				SaveToFile("students.json", students);
-				FreeStudents(students);
-				std::cout << "Data saved. Bye.\n";
-				return 0;
-			default:
-				std::cout << "Invalid option, please try again.\n";
-				break;
-		}
-	}
-}
-
 void InitStudents(StudentArray& arr) {
-	// TODO: 分配 INITIAL_CAPACITY 个 Student 空间，初始化 size/capacity
+	// 分配 INITIAL_CAPACITY 个 Student 空间，初始化 size/capacity
 	arr.size_ = 0;                     // 初始学生是0
 	arr.capacity_ = INITIAL_CAPACITY;  // 容量是8
 	arr.data_ = new Student[arr.capacity_];
 }
 
 void FreeStudents(StudentArray& arr) {
-	// TODO: 释放堆内存，把指针和 size/capacity 设为 0
+	// 释放堆内存，把指针和 size/capacity 设为 0
 	delete[] arr.data_;   // 释放
 	arr.data_ = nullptr;  // 置空好习惯
 	arr.size_ = 0;
@@ -78,7 +26,7 @@ void FreeStudents(StudentArray& arr) {
 }
 
 bool ExpandCapacity(StudentArray& arr, int capacity) {
-	// TODO: 如果 capacity < minCapacity，就扩容（new[] 或 realloc 思路）
+	// 如果 capacity < minCapacity，就扩容
 	if (arr.capacity_ >= capacity) {
 		return true;
 	}
@@ -105,15 +53,9 @@ bool ExpandCapacity(StudentArray& arr, int capacity) {
 }
 
 bool AddStudent(StudentArray& arr, const Student& student) {
-	// TODO: 1. 检查学号是否唯一 2. ExpandCapacity
-	//       3. 拷贝到 data[size]，size++ 4. 写日志
-	if (!IsUniqueID(arr, student.id_)) {
-		std::cout << "Add failed: duplicated id.\n";
-		return false;
-	}
-
 	if (!ExpandCapacity(arr, arr.size_ + 1)) {
 		std::cout << "Add failed: not enough memory.\n";
+		LOG("添加学生失败，容量不足！");
 		return false;
 	}
 
@@ -124,7 +66,7 @@ bool AddStudent(StudentArray& arr, const Student& student) {
 }
 
 bool RemoveStudentByID(StudentArray& arr, const char* id) {
-	// TODO: 找到下标，用覆盖/前移方式删除，size--
+	// 找到下标，用覆盖/前移方式删除，size--
 	for (int i = 0; i < arr.size_; ++i) {
 		if (std::strcmp(arr.data_[i].id_, id) == 0) {
 			for (int j = i + 1; j < arr.size_; ++j) {
@@ -138,7 +80,6 @@ bool RemoveStudentByID(StudentArray& arr, const char* id) {
 }
 
 Student* FindStudentById(const StudentArray& arr, const char* id) {
-	// TODO: 线性查找
 	for (int i = 0; i < arr.size_; ++i) {
 		if (std::strcmp(arr.data_[i].id_, id) == 0) {
 			return &arr.data_[i];
@@ -184,7 +125,7 @@ void ModifyStudentMenu(Student& student) {
 }
 
 void SearchByID(const StudentArray& arr, const char* keyword) {
-	// TODO: 使用 strstr 做模糊匹配，打印命中学生
+	// strstr
 	bool found = false;
 	for (int i = 0; i < arr.size_; ++i) {
 		if (std::strstr(arr.data_[i].id_, keyword)) {
@@ -202,7 +143,7 @@ void SearchByID(const StudentArray& arr, const char* keyword) {
 }
 
 void SearchByName(const StudentArray& arr, const char* keyword) {
-	// TODO: 使用 strstr 做模糊匹配，打印命中学生
+	// 使用strstr模糊匹配
 	bool found = false;
 	for (int i = 0; i < arr.size_; ++i) {
 		if (std::strstr(arr.data_[i].name_, keyword)) {
@@ -312,7 +253,6 @@ int CompareClassDescend(const Student& a, const Student& b) {
 }
 
 int CompareScoreAsend(const Student& a, const Student& b) {
-	// TODO: 返回 a.score 与 b.score 的比较结果
 	if (a.score_ > b.score_) {
 		return 1;
 	}
@@ -323,7 +263,6 @@ int CompareScoreAsend(const Student& a, const Student& b) {
 }
 
 int CompareScoreDescend(const Student& a, const Student& b) {
-	// TODO
 	if (a.score_ < b.score_) {
 		return 1;
 	}
@@ -334,17 +273,15 @@ int CompareScoreDescend(const Student& a, const Student& b) {
 }
 
 int CompareAgeAsend(const Student& a, const Student& b) {
-	// TODO
 	return a.age_ - b.age_;
 }
 
 int CompareAgeDescend(const Student& a, const Student& b) {
-	// TODO
 	return b.age_ - a.age_;
 }
 
 float AverageScore(const StudentArray& arr) {
-	// TODO: 累加成绩 / size，注意 size=0 情况
+	// 累加成绩 / size，注意 size=0 情况
 	if (arr.size_ == 0) {
 		return 0.0f;
 	}
@@ -356,7 +293,7 @@ float AverageScore(const StudentArray& arr) {
 }
 
 bool MaxMinScore(const StudentArray& arr, float& max_score, float& min_score) {
-	// TODO: 遍历更新最大最小；若 size=0 返回 false
+	// 遍历更新最大最小；若 size=0 返回 false
 	if (arr.size_ == 0) {
 		return false;
 	}
@@ -374,6 +311,40 @@ bool MaxMinScore(const StudentArray& arr, float& max_score, float& min_score) {
 	}
 
 	return true;
+}
+
+void StatAll(const StudentArray& arr) {
+	float avg = AverageScore(arr);
+	float max_score, min_score;
+	if (MaxMinScore(arr, max_score, min_score)) {
+		std::cout << "Average score: " << avg << "\n";
+		std::cout << "Max score: " << max_score << ", Min score: " << min_score << "\n";
+	} else {
+		std::cout << "No students.\n";
+	}
+}
+
+void StatByClass(const StudentArray& arr, ClassType cls) {
+	StudentArray temp;
+	InitStudents(temp);
+	for (int i = 0; i < arr.size_; ++i) {
+		if (arr.data_[i].class_ == cls) {
+			if (temp.size_ >= temp.capacity_) {
+				ExpandCapacity(temp, temp.size_ + 1);
+			}
+			temp.data_[temp.size_] = arr.data_[i];
+			++temp.size_;
+		}
+	}
+	float avg = AverageScore(temp);
+	float max_score, min_score;
+	if (MaxMinScore(temp, max_score, min_score)) {
+		std::cout << "Class " << static_cast<int>(cls) << ": Avg=" << avg << ", Max=" << max_score
+		          << ", Min=" << min_score << "\n";
+	} else {
+		std::cout << "Class " << static_cast<int>(cls) << ": No students.\n";
+	}
+	FreeStudents(temp);
 }
 
 bool LoadFile(const char* filename, StudentArray& arr) {
@@ -423,7 +394,7 @@ bool SaveToFile(const char* filename, const StudentArray& arr) {
 }
 
 void LOG(const std::string& msg) {
-	// TODO: 附带时间戳写到 system.log
+	// 附带时间戳写到 system.log
 	std::ofstream ofs("system.log", std::ios::app);
 	if (!ofs) {
 		return;
@@ -438,11 +409,14 @@ void LOG(const std::string& msg) {
 }
 
 void PrintStudent(const Student& student) {
+	std::cout << "===============\n";
 	std::cout << "ID: " << student.id_ << "\n";
 	std::cout << "  Name: " << student.name_ << "\n";
 	std::cout << "  Age: " << student.age_ << "\n";
 	std::cout << "  Score: " << student.score_ << "\n";
 	std::cout << "  Class: " << static_cast<int>(student.class_) << "\n";
+	std::cout << "===============\n";
+	std::cout << "\n";
 }
 
 void ListAllStudents(const StudentArray& arr) {
@@ -453,9 +427,28 @@ void ListAllStudents(const StudentArray& arr) {
 
 	std::cout << "Total " << arr.size_ << " students:\n";
 	for (int i = 0; i < arr.size_; ++i) {
-		std::cout << "---- #" << (i + 1) << " ----\n";
+		std::cout << "------# " << (i + 1) << "------\n";
 		PrintStudent(arr.data_[i]);
 	}
+}
+
+void PrintSortedStudents(const StudentArray& arr, CompareFunc cmp) {
+	StudentArray copy;
+	InitStudents(copy);
+
+	for (int i = 0; i < arr.size_; ++i) {
+		if (copy.size_ >= copy.capacity_) {
+			ExpandCapacity(copy, copy.size_ + 1);
+		}
+		copy.data_[copy.size_] = arr.data_[i];
+		++copy.size_;
+	}
+
+	SortStudents(copy, cmp);
+
+	ListAllStudents(copy);
+
+	FreeStudents(copy);
 }
 
 void MainMenu() {
@@ -474,6 +467,11 @@ void HandleAdd(StudentArray& arr) {
 	Student student{};
 	std::cout << "Enter id: ";
 	std::cin >> student.id_;
+	if (!IsUniqueID(arr, student.id_)) {
+		std::cout << "This ID had been used! \n";
+		LOG("添加学生失败，ID重复！");
+		return;
+	}
 	std::cout << "Enter name: ";
 	std::cin >> student.name_;
 	std::cout << "Enter age: ";
@@ -496,12 +494,11 @@ void HandleAdd(StudentArray& arr) {
 		LOG("添加学生成功，学号：" + std::string(student.id_) + "，姓名：" + student.name_);
 	} else {
 		std::cout << "Add failed.\n";
-		LOG("添加学生失败，学号重复，学号：" + std::string(student.id_));
+		LOG("添加学生失败，学号：" + std::string(student.id_));
 	}
 }
 
 void HandleRemove(StudentArray& arr) {
-	// TODO: 输入学号，调用 RemoveStudentByID
 	char id[10];
 	std::cout << "Please input ID: ";
 	std::cin >> id;
@@ -517,13 +514,13 @@ void HandleRemove(StudentArray& arr) {
 }
 
 void HandleModify(StudentArray& arr) {
-	// TODO: 先按学号查找，再调用 update_student
 	char id[10];
 	std::cout << "Please input ID: ";
 	std::cin >> id;
 
 	Student* modify_student = FindStudentById(arr, id);
 	if (modify_student != nullptr) {
+		PrintStudent(*modify_student);
 		ModifyStudentMenu(*modify_student);  // 把实际指向的对象当引用传进去
 		std::cout << "Modify succeeded.\n";
 		LOG("修改学生信息，学号：" + std::string(modify_student->id_) + "，姓名：" + modify_student->name_);
@@ -535,10 +532,9 @@ void HandleModify(StudentArray& arr) {
 }
 
 void HandleSearch(const StudentArray& arr) {
-	// TODO: 做一个小菜单：按学号 / 姓名 搜索
 	int choice = -1;
 	while (true) {
-		std::cout << "====== Search Student Menu ======";
+		std::cout << "\n====== Search Student Menu ======\n";
 		std::cout << "1. Search by ID\n";
 		std::cout << "2. Search by name\n";
 		std::cout << "3. Search by age\n";
@@ -623,20 +619,44 @@ void HandleSort(StudentArray& arr) {
 		return;
 	}
 
-	SortStudents(arr, cmp);
-	ListAllStudents(arr);
+	PrintSortedStudents(arr, cmp);
 	std::cout << "Sort finished.\n";
 }
 
 void HandleStat(StudentArray& arr) {
-	// TODO: 调用 AverageScore / calc_max_min_score，打印结果
-	float avg = AverageScore(arr);
-	float max_score, min_score;
-	if (MaxMinScore(arr, max_score, min_score)) {
-		std::cout << "Average score: " << avg << "\n";
-		std::cout << "Max score: " << max_score << ", Min score: " << min_score << "\n";
-	} else {
-		std::cout << "No students.\n";
+	int choice = -1;
+	while (true) {
+		std::cout << "\n====== Score Statistics Menu ======\n";
+		std::cout << "1. All students\n";
+		std::cout << "2. By class\n";
+		std::cout << "0. Exit\n";
+		std::cout << "Please enter your choice: ";
+		std::cin >> choice;
+
+		if (choice == 1) {
+			StatAll(arr);
+		} else if (choice == 2) {
+			int cls_choice = -1;
+			std::cout << "Select class:\n";
+			std::cout << "1. Class A\n";
+			std::cout << "2. Class B\n";
+			std::cout << "3. Class C\n";
+			std::cout << "0. Exit\n";
+			std::cout << "Please enter your choice: ";
+			std::cin >> cls_choice;
+
+			if (cls_choice >= 1 && cls_choice <= 3) {
+				StatByClass(arr, static_cast<ClassType>(cls_choice));
+			} else if (cls_choice == 0) {
+				break;
+			} else {
+				std::cout << "Invalid option, please try again.\n";
+			}
+		} else if (choice == 0) {
+			break;
+		} else {
+			std::cout << "Invalid option, please try again.\n";
+		}
 	}
 }
 
@@ -648,7 +668,7 @@ bool IsValidAge(int age) {
 }
 
 bool IsUniqueID(const StudentArray& arr, const char* id) {
-	// TODO: 遍历检查是否已存在相同学号
+	// 遍历检查是否已存在相同学号
 	for (int i = 0; i < arr.size_; ++i) {
 		if (std::strcmp(arr.data_[i].id_, id) == 0) {
 			return false;
