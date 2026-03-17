@@ -26,7 +26,7 @@ struct StudentArray {
 // 排序比较函数类型
 typedef int (*CompareFunc)(const Student&, const Student&);
 
-// ========== 动态数组管理 ==========
+// 动态数组管理
 void InitStudents(StudentArray& arr);
 void FreeStudents(StudentArray& arr);
 bool ExpandCapacity(StudentArray& arr, int minCapacity);
@@ -35,7 +35,7 @@ bool AddStudent(StudentArray& arr, const Student& s);
 bool RemoveStudentByID(StudentArray& arr, const char* id);
 Student* FindStudentById(const StudentArray& arr, const char* id);
 
-// ========== 排序与查询 ==========
+// 排序与查询
 void SortStudents(StudentArray& arr, CompareFunc cmp);
 
 int CompareScoreAsend(const Student& a, const Student& b);
@@ -55,17 +55,17 @@ void SearchByAge(const StudentArray& arr, int age);
 void SearchByScore(const StudentArray& arr, float score);
 void SearchByClass(const StudentArray& arr, ClassType cls);
 
-// ========== 统计功能 ==========
+// 统计功能
 float AverageScore(const StudentArray& arr);
 bool MaxMinScore(const StudentArray& arr, float& maxScore, float& minScore);
 
-// ========== 文件与日志 ==========
+// 文件与日志
 bool LoadFile(const char* filename, StudentArray& arr);
 bool SaveToFile(const char* filename, const StudentArray& arr);
 
 void LOG(const std::string& msg);
 
-// ========== 打印与菜单 ==========
+// 打印与菜单
 void PrintStudent(const Student& s);
 void ListAllStudents(const StudentArray& arr);
 
