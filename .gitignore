@@ -1,0 +1,7 @@
+# CMake/VS 生成的构建目录
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/*.vcxproj
+/*.vcxproj.filters
+/*.sln
